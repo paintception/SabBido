@@ -13,7 +13,7 @@ def conv_spec(c, h, w, input_shape, border_mode):
 	return Convolution2D(c, h, w, border_mode="same", input_shape=input_shape)
 
 """
-def Inception_module(inp):
+def SabBido_module(inp):
 	
 	tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
 	tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
@@ -22,6 +22,25 @@ def Inception_module(inp):
 	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)	
 
 	inception = merge([tower_1, tower_2], mode='concat', concat_axis=1)
+
+	return inception
+
+
+def Inception_module(inp)	
+	
+	tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+
+	tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+	tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
+
+	tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)
+
+	tower_3 = MaxPooling2D((3, 3), strides=(1, 1), border_mode='same')(input_img)
+	tower_3 = Convolution2D(64, 1, 1, border_mode='same', activation='relu')(tower_3)
+
+	output = merge([tower_0, tower_1, tower_2, tower_3], mode='concat', concat_axis=1)
+
 
 	return inception
 
