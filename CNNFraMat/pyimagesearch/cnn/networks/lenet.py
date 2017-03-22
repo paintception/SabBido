@@ -1,38 +1,57 @@
 # import the necessary packages
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers.convolutional import Convolution2D
 from keras.layers.convolutional import MaxPooling2D
 from keras.layers.core import Activation
 from keras.layers.core import Flatten
 from keras.layers.core import Dense
 import keras
+from keras.layers import Input, merge
+
 """
 def conv_spec(c, h, w, input_shape, border_mode):
 	return Convolution2D(c, h, w, border_mode="same", input_shape=input_shape)
+
 """
+def Inception_module(inp):
+	
+	tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+	tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
+
+	tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)	
+
+	inception = merge([tower_1, tower_2], mode='concat', concat_axis=1)
+
+	return inception
 
 class LeNet:
 	@staticmethod	
 	def build(width, height, depth, classes, weightsPath=None):
 		# initialize the model
-		model = Sequential()
-
+		#model = Sequential()
+		inp = Input(shape=(depth, height, width))
+		inception = Inception_module(inp)
 		# first set of CONV => RELU => POOL
-		model.add(Convolution2D(20, 5, 5, border_mode="same", input_shape=(depth, height, width)))
+		#model.add(Convolution2D(20, 5, 5, border_mode="same", input_shape=(depth, height, width)))
 		#model.add(conv_spec(20, 5, 5, (depth, height, width), "same"))
-		model.add(Activation("relu"))
-
+		#model.add(Activation("relu"))
+		
+		# model.add(Inception_module(depth, height, width))
+		# inception=Inception_module(inception)
 		# second set of CONV => RELU => POOL
-		model.add(Convolution2D(50, 3, 3, border_mode="same"))
-		model.add(Activation("relu"))
-
+		# model.add(Convolution2D(50, 3, 3, border_mode="same"))
+		# model.add(Activation("relu"))
+		a = Flatten()(inception)
 		# set of FC => RELU layers
-		model.add(Flatten())
-		model.add(Dense(500))
-		model.add(Activation("relu"))
-
+		# model.add(Flatten())
+		# model.add(Dense(100))
+		# model.add(Activation("relu"))
+		a = Dense(classes)(a)
+		out = Activation("softmax")(a)
 		# softmax classifier
-		model.add(Dense(classes))
-		model.add(Activation("softmax"))
-
+		# model.add(Dense(classes))
+		# model.add(Activation("softmax"))
+		model = Model(input=[inp], output=[out])
+		
 		return model

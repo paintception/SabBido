@@ -27,18 +27,22 @@ def make_categorical(labels, n_classes):
 
 def plots(history):
 
+	f1 = plt.figure(1)
 	plt.plot(history.history['acc'])
+	plt.plot(history.history['val_acc'])
 	plt.title('Model Accuracy')
 	plt.ylabel('Accuracy')
 	plt.xlabel('Epoch')
-	#plt.legend(['Training', 'Validation'], loc='upper left')
+	plt.legend(['Training', 'Validation'], loc='upper left')
 	plt.show()
-	# "Loss"
+
+	f2 = plt.figure(2)
 	plt.plot(history.history['loss'])
+	plt.plot(history.history['val_loss'])
 	plt.title('Model Loss')
 	plt.ylabel('Loss')
 	plt.xlabel('Epoch')
-	#plt.legend(['Training', 'Validation'], loc='upper left')	
+	plt.legend(['Training', 'Validation'], loc='upper left')
 	plt.show()
 
 def final_prediction_test():	
@@ -85,7 +89,7 @@ def main():
 	model = LeNet.build(width=8, height=8, depth=1, classes=10, weightsPath=args["weights"] if args["load_model"] > 0 else None)
 	model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
-	history = model.fit(trainData, trainLabels, batch_size=50, nb_epoch=400, verbose=1, callbacks=[tbCallBack])
+	history = model.fit(trainData, trainLabels, batch_size=50, nb_epoch=40, verbose=1, validation_data=(testData, testLabels),callbacks=[tbCallBack])
 
 	print("[INFO] evaluating...")
 	(loss, accuracy) = model.evaluate(testData, testLabels, batch_size=128, verbose=1)
