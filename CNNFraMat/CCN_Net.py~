@@ -36,8 +36,8 @@ def plots(history):
     plt.legend(['Training', 'Validation'], loc='upper left')
     plt.show()
 
-    np.save('/home/matthia/Desktop/MFAccuracyTest', np.asarry(history.history['acc']))
-    np.save('/home/matthia/Desktop/MFAccuracyValidation', np.asarray(history.history['val_acc']))
+    np.save('/home/matthia/Desktop/AccuracyTest', np.asarry(history.history['acc']))
+    np.save('/home/matthia/Desktop/AccuracyValidation', np.asarry(history.history['val_acc']))
 
     f2 = plt.figure(2)
     plt.plot(history.history['loss'])
@@ -48,8 +48,8 @@ def plots(history):
     plt.legend(['Training', 'Validation'], loc='upper left')
     plt.show()
     
-    np.save('/home/matthia/Desktop/MFAccuracyLoss', np.asarry(history.history['loss']))
-    np.save('/home/matthia/Desktop/MFValidationLoss', np.asarray(history.history['val_loss']))
+    np.save('/home/matthia/Desktop/AccuracyLoss', np.asarry(history.history['loss']))
+    np.save('/home/matthia/Desktop/ValidationLoss', np.asarry(history.history['val_loss']))
 
 def final_prediction_test():    
     for i in np.random.choice(np.arange(0, len(testLabels)), size=(10,)):
@@ -95,7 +95,7 @@ def main():
     model = LeNet.build(width=8, height=8, depth=1, classes=10, weightsPath=args["weights"] if args["load_model"] > 0 else None)
     model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
-    history = model.fit(trainData, trainLabels, batch_size=50, nb_epoch=4000, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+    history = model.fit(trainData, trainLabels, batch_size=50, nb_epoch=40, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
 
     print("[INFO] evaluating...")
     (loss, accuracy) = model.evaluate(testData, testLabels, batch_size=128, verbose=1)

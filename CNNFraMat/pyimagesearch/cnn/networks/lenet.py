@@ -26,7 +26,7 @@ def SabBido_module(inp):
 	return inception
 
 
-def Inception_module(inp)	
+def Inception_module(inp):	
 	
 	tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
 
@@ -36,13 +36,13 @@ def Inception_module(inp)
 	tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
 	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)
 
-	tower_3 = MaxPooling2D((3, 3), strides=(1, 1), border_mode='same')(input_img)
-	tower_3 = Convolution2D(64, 1, 1, border_mode='same', activation='relu')(tower_3)
+	tower_3 = MaxPooling2D((3, 3), strides=(1, 1), border_mode='same')(inp)
+	tower_3 = Convolution2D(20, 1, 1, border_mode='same', activation='relu')(tower_3)
 
 	output = merge([tower_0, tower_1, tower_2, tower_3], mode='concat', concat_axis=1)
 
 
-	return inception
+	return output
 
 class LeNet:
 	@staticmethod	
@@ -50,7 +50,8 @@ class LeNet:
 		# initialize the model
 		#model = Sequential()
 		inp = Input(shape=(depth, height, width))
-		inception = Inception_module(inp)
+		inception = SabBido_module(inp)
+		#inception = Inception_module(inp)
 		# first set of CONV => RELU => POOL
 		#model.add(Convolution2D(20, 5, 5, border_mode="same", input_shape=(depth, height, width)))
 		#model.add(conv_spec(20, 5, 5, (depth, height, width), "same"))
