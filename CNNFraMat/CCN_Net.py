@@ -25,31 +25,61 @@ def shape_data(dataset):
 def make_categorical(labels, n_classes):
     return(np_utils.to_categorical(labels, n_classes))
 
-def plots(history):
+def MatFra_plots(history, i):
 
-    f1 = plt.figure(1)
+    print "Storing SabBido's Results for experiment: ", i
+
+    #f1 = plt.figure(1)
     plt.plot(history.history['acc'])
     plt.plot(history.history['val_acc'])
     plt.title('Model Accuracy')
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.show()
+    plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/MatFraAccuracyExp_'+str(i))
 
-    np.save('/home/matthia/Desktop/MFAccuracyTest', np.asarry(history.history['acc']))
-    np.save('/home/matthia/Desktop/MFAccuracyValidation', np.asarray(history.history['val_acc']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
-    f2 = plt.figure(2)
+    #f2 = plt.figure(2)
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('Model Loss')
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.show()
+    plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/MatFraLossExp_'+str(i))
     
-    np.save('/home/matthia/Desktop/MFAccuracyLoss', np.asarry(history.history['loss']))
-    np.save('/home/matthia/Desktop/MFValidationLoss', np.asarray(history.history['val_loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraAccuracyLossExp_', np.asarray(history.history['loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraValidationLossExp_', np.asarray(history.history['val_loss']))
+
+def Google_plots(history, i):
+
+    print "Storing Google Results for experiment: ", i
+
+    #f1 = plt.figure(1)
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model Accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Training', 'Validation'], loc='upper left')
+    plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/GoogleAccuracyExp_'+str(i))
+
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
+
+    #f2 = plt.figure(2)
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model Loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Training', 'Validation'], loc='upper left')
+    plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/GoogleLossExp_'+str(i))
+    
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleAccuracyLossExp_', np.asarray(history.history['loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleValidationLossExp_', np.asarray(history.history['val_loss']))
 
 def final_prediction_test():    
     for i in np.random.choice(np.arange(0, len(testLabels)), size=(10,)):
@@ -82,26 +112,39 @@ def main():
     data = load_dataset()
     dataset = shape_data(data)
 
-    trainData, testData, trainLabels, testLabels = train_test_split(dataset / 255.0, data.target.astype("int"), test_size=0.10)
-
-    #tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/matthia/Desktop/ogs', histogram_freq=0, write_graph=True, write_images=False)
-
-    trainLabels = make_categorical(trainLabels, 10)
-    testLabels = make_categorical(testLabels, 10)
-
-    print("[INFO] compiling model...")
+    n_epochs = 4
     opt = SGD(lr=0.01)
+    cross_validation_exp = 2
 
-    model = LeNet.build(width=8, height=8, depth=1, classes=10, weightsPath=args["weights"] if args["load_model"] > 0 else None)
-    model.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+    for i in xrange(0, cross_validation_exp):
 
-    history = model.fit(trainData, trainLabels, batch_size=50, nb_epoch=4000, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+        print "Running Experiment: ", i
 
-    print("[INFO] evaluating...")
-    (loss, accuracy) = model.evaluate(testData, testLabels, batch_size=128, verbose=1)
-    print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
+        trainData, testData, trainLabels, testLabels = train_test_split(dataset / 255.0, data.target.astype("int"), test_size=0.10)
 
-    plots(history)
+        #tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/matthia/Desktop/ogs', histogram_freq=0, write_graph=True, write_images=False)
+
+        trainLabels = make_categorical(trainLabels, 10)
+        testLabels = make_categorical(testLabels, 10)
+
+        print("[INFO] compiling model...")
+
+        model_MatFra = LeNet.build(width=8, height=8, depth=1, classes=10, mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
+        model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+
+        history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=50, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+
+        #print("[INFO] evaluating...")
+        #(loss, accuracy) = model_MatFra.evaluate(testData, testLabels, batch_size=128, verbose=1)
+        #print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
+        MatFra_plots(history_MatFra, i)
+
+        model_Google = LeNet.build(width=8, height=8, depth=1, classes=10, mode=2, weightsPath=args["weights"] if args["load_model"] > 0 else None)
+        model_Google.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+
+        history_Google = model_Google.fit(trainData, trainLabels, batch_size=50, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+        
+        Google_plots(history_Google, i)
 
 if __name__ == '__main__':
     main()
