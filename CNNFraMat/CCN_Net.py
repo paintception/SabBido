@@ -29,7 +29,7 @@ def MatFra_plots(history, i):
 
     print "Storing SabBido's Results for experiment: ", i
 
-    #f1 = plt.figure(1)
+    f1 = plt.figure(1)
     plt.plot(history.history['acc'])
     plt.plot(history.history['val_acc'])
     plt.title('Model Accuracy')
@@ -41,7 +41,7 @@ def MatFra_plots(history, i):
     np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
     np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
-    #f2 = plt.figure(2)
+    f2 = plt.figure(2)
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('Model Loss')
@@ -50,14 +50,14 @@ def MatFra_plots(history, i):
     plt.legend(['Training', 'Validation'], loc='upper left')
     plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/MatFraLossExp_'+str(i))
     
-    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraAccuracyLossExp_', np.asarray(history.history['loss']))
-    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraValidationLossExp_', np.asarray(history.history['val_loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/MatFraValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
 
 def Google_plots(history, i):
 
     print "Storing Google Results for experiment: ", i
 
-    #f1 = plt.figure(1)
+    f1 = plt.figure(1)
     plt.plot(history.history['acc'])
     plt.plot(history.history['val_acc'])
     plt.title('Model Accuracy')
@@ -65,11 +65,12 @@ def Google_plots(history, i):
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
     plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/GoogleAccuracyExp_'+str(i))
+    plt.close()
 
     np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
     np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
-    #f2 = plt.figure(2)
+    f2 = plt.figure(2)
     plt.plot(history.history['loss'])
     plt.plot(history.history['val_loss'])
     plt.title('Model Loss')
@@ -77,9 +78,10 @@ def Google_plots(history, i):
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
     plt.savefig('/home/matthia/Desktop/SabBidoExps/Plots/GoogleLossExp_'+str(i))
-    
-    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleAccuracyLossExp_', np.asarray(history.history['loss']))
-    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleValidationLossExp_', np.asarray(history.history['val_loss']))
+    plt.close()
+
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
+    np.save('/home/matthia/Desktop/SabBidoExps/res/GoogleValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
 
 def final_prediction_test():    
     for i in np.random.choice(np.arange(0, len(testLabels)), size=(10,)):
@@ -112,9 +114,9 @@ def main():
     data = load_dataset()
     dataset = shape_data(data)
 
-    n_epochs = 4
+    n_epochs = 4000
     opt = SGD(lr=0.01)
-    cross_validation_exp = 2
+    cross_validation_exp = 10
 
     for i in xrange(0, cross_validation_exp):
 
