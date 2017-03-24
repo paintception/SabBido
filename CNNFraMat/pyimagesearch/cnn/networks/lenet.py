@@ -42,7 +42,7 @@ class LeNet:
 	def build(width, height, depth, classes, mode, weightsPath=None):
 		# initialize the model
 		#model = Sequential()
-		inp = Input(shape=(depth, height, width))
+		inp = Input(shape=(height, width, depth))
 		
 		if mode == 1:
 
