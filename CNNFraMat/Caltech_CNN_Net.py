@@ -13,23 +13,23 @@ from matplotlib import pyplot as plt
 from sklearn.datasets import load_digits
 
 def load_Train_data():
-    X = np.load('/home/matthia/Documents/SabBidoStuff/Caltech/Data/train_data.npy')
+    X = np.load('./Data/train_data.npy')
     #X = preprocessing.scale(X)
 
     return X
 
 def load_Train_labels():
-    y = np.load('/home/matthia/Documents/SabBidoStuff/Caltech/Data/train_labels.npy')
+    y = np.load('./Data/train_labels.npy')
 
     return y
 
 def load_Validation_data():
-    Val_X = np.load('/home/matthia/Documents/SabBidoStuff/Caltech/Data/val_data.npy')
+    Val_X = np.load('./Data/val_data.npy')
 
     return Val_X
 
 def load_Validation_labels():
-    Val_y = np.load('/home/matthia/Documents/SabBidoStuff/Caltech/Data/val_labels.npy')
+    Val_y = np.load('./Data/val_labels.npy')
 
     return Val_y
 
@@ -54,10 +54,10 @@ def MatFra_plots(history, i):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('/home/matthia/Documents/SabBidoStuff/Caltech/Plots/MatFraAccuracyExp_'+str(i))
+    plt.savefig('./Plots/MatFraAccuracyExp_'+str(i))
 
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
+    np.save('./res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
+    np.save('./res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
     f2 = plt.figure(2)
     plt.plot(history.history['loss'])
@@ -66,10 +66,10 @@ def MatFra_plots(history, i):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('/home/matthia/Documents/SabBidoStuff/Caltech/Plots/MatFraLossExp_'+str(i))
+    plt.savefig('./Plots/MatFraLossExp_'+str(i))
     
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/MatFraAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/MatFraValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
+    np.save('./res/MatFraAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
+    np.save('./res/MatFraValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
 
 def Google_plots(history, i):
 
@@ -82,11 +82,11 @@ def Google_plots(history, i):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('/home/matthia/Documents/SabBidoStuff/Caltech/Plots/GoogleAccuracyExp_'+str(i))
+    plt.savefig('./Plots/GoogleAccuracyExp_'+str(i))
     plt.close()
 
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/GoogleTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/GoogleValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
+    np.save('./res/GoogleTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
+    np.save('./res/GoogleValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
     f2 = plt.figure(2)
     plt.plot(history.history['loss'])
@@ -95,11 +95,11 @@ def Google_plots(history, i):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('/home/matthia/Documents/SabBidoStuff/Caltech/Plots/GoogleLossExp_'+str(i))
+    plt.savefig('./Plots/GoogleLossExp_'+str(i))
     plt.close()
 
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/GoogleAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
-    np.save('/home/matthia/Documents/SabBidoStuff/Caltech/res/GoogleValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
+    np.save('./res/GoogleAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
+    np.save('./res/GoogleValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
 
 def final_prediction_test():    
     for i in np.random.choice(np.arange(0, len(testLabels)), size=(10,)):
