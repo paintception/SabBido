@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 #import cv2
-import seaborn
+#import seaborn
 import keras
 
 from pyimagesearch.cnn.networks import LeNet
@@ -11,18 +11,26 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_digits
+from sklearn.preprocessing import LabelEncoder
 
-def load_Train_data():
-    X = np.load('./Data/train_data.npy')
-    #X = preprocessing.scale(X)
+def load_Positions():
+    X = np.load('/home/borg/Documents/64_Representation/600000Positions.npy')
 
     return X
 
-def load_Train_labels():
-    y = np.load('./Data/train_labels.npy')
+def load_Labels():
+    y = np.load('/home/borg/Documents/64_Representation/600000Labels.npy')
+    new_y = np.asarray(y)
 
-    return y
+    encoder = LabelEncoder()
+    encoder.fit(new_y)
+    encoded_y = encoder.transform(new_y)
+    dummy_y = np_utils.to_categorical(encoded_y) 
 
+    return dummy_y
+
+
+"""
 def load_Validation_data():
     Val_X = np.load('./Data/val_data.npy')
 
@@ -32,13 +40,13 @@ def load_Validation_labels():
     Val_y = np.load('./Data/val_labels.npy')
 
     return Val_y
+"""
 
 def shape_data(dataset):
     
-    data = dataset.data.reshape((dataset.data.shape[0], 8, 8))
-    shaped_data = data[:, np.newaxis, :, :]
+    dataset = np.reshape(dataset, (dataset.shape[0], 1, 8, 8))
 
-    return shaped_data
+    return dataset
 
 def make_categorical(labels, n_classes):
     return(np_utils.to_categorical(labels, n_classes))
@@ -54,10 +62,10 @@ def MatFra_plots(history, i):
     plt.ylabel('Accuracy')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('./Plots/MatFraAccuracyExp_'+str(i))
+    plt.savefig('./Desktop/MatFraAccuracyExp_'+str(i))
 
-    np.save('./res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
-    np.save('./res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
+    #np.save('./res/MatFraTrainingAccuracyExp_'+str(i), np.asarray(history.history['acc']))
+    #np.save('./res/MatFraValidationAccuracyExp_'+str(i), np.asarray(history.history['val_acc']))
 
     f2 = plt.figure(2)
     plt.plot(history.history['loss'])
@@ -66,10 +74,10 @@ def MatFra_plots(history, i):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(['Training', 'Validation'], loc='upper left')
-    plt.savefig('./Plots/MatFraLossExp_'+str(i))
+    plt.savefig('./Desktop/MatFraLossExp_'+str(i))
     
-    np.save('./res/MatFraAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
-    np.save('./res/MatFraValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
+    #np.save('./res/MatFraAccuracyLossExp_'+str(i), np.asarray(history.history['loss']))
+    #np.save('./res/MatFraValidationLossExp_'+str(i), np.asarray(history.history['val_loss']))
 
 def Google_plots(history, i):
 
@@ -129,46 +137,45 @@ def main():
     ap.add_argument("-w", "--weights", type=str, help="(optional) path to weights file")
     args = vars(ap.parse_args())
 
-    #X = load_data()
-    #y = load_labels()
+    X = load_Positions()
+    X = shape_data(X)
+    y = load_Labels()
 
-    n_epochs = 100
+    n_epochs = 2000
     opt = SGD(lr=0.01)
     cross_validation_exp = 1
+
+    trainData, testData, trainLabels, testLabels = train_test_split(X, y, test_size=0.1, random_state=42)
 
     for i in xrange(0, cross_validation_exp):
 
         print "Running Experiment: ", i
 
-        trainData = load_Train_data()
-        trainLabels = load_Train_labels()
-        testData = load_Validation_data()
-        testLabels = load_Validation_labels()
+        #trainData = load_Train_data()
+        #trainLabels = load_Train_labels()
+        #testData = load_Validation_data()
+        #testLabels = load_Validation_labels()
 
-        #tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/matthia/Desktop/ogs', histogram_freq=0, write_graph=True, write_images=False)
-
-        #trainLabels = make_categorical(trainLabels, 10)
-        #testLabels = make_categorical(testLabels, 10)
+        tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/borg/Desktop/logs', histogram_freq=0, write_graph=True, write_images=False)
 
         print("[INFO] compiling model...")
 
-        model_MatFra = LeNet.build(width=300, height=300, depth=3, classes=10, mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
+        model_MatFra = LeNet.build(width=8, height=8, depth=1, classes=3, mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
         model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
-        history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=50, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+        history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=128, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels), callbacks=[tbCallBack])
 
         print("[INFO] evaluating...")
         (loss, accuracy) = model_MatFra.evaluate(testData, testLabels, batch_size=128, verbose=1)
         print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
         MatFra_plots(history_MatFra, i)
 
-        model_Google = LeNet.build(width=300, height=300, depth=3, classes=10, mode=2, weightsPath=args["weights"] if args["load_model"] > 0 else None)
-        model_Google.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+        #model_Google = LeNet.build(width=300, height=300, depth=3, classes=10, mode=3, weightsPath=args["weights"] if args["load_model"] > 0 else None)
+        #model_Google.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
-        history_Google = model_Google.fit(trainData, trainLabels, batch_size=50, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
+        #history_Google = model_Google.fit(trainData, trainLabels, batch_size=50, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels))#,callbacks=[tbCallBack])
         
-        Google_plots(history_Google, i)
+        #Google_plots(history_Google, i)
 
 if __name__ == '__main__':
     main()
-

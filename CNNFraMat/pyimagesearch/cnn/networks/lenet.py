@@ -1,4 +1,4 @@
-# import the necessary packages
+#import the necessary packages
 from keras.models import Sequential, Model
 from keras.layers.convolutional import Convolution2D
 from keras.layers.convolutional import MaxPooling2D
@@ -9,83 +9,85 @@ import keras
 from keras.layers import Input, merge
 
 def SabBido_module(inp):
-	
-	tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-	tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
+    tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
 
-	tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)	
+    tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
 
-	inception = merge([tower_1, tower_2], mode='concat', concat_axis=1)
+    tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)    
 
-	return inception
+    inception = merge([tower_0, tower_1, tower_2], mode='concat', concat_axis=1)
 
-def Inception_module(inp):	
-	
-	tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    return inception
 
-	tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-	tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
+def Inception_module(inp):    
+    
+    tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
 
-	tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-	tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)
+    tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
 
-	tower_3 = MaxPooling2D((3, 3), strides=(1, 1), border_mode='same')(inp)
-	tower_3 = Convolution2D(20, 1, 1, border_mode='same', activation='relu')(tower_3)
+    tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)
 
-	output = merge([tower_0, tower_1, tower_2, tower_3], mode='concat', concat_axis=1)
+    tower_3 = MaxPooling2D((3, 3), strides=(1, 1), border_mode='same')(inp)
+    tower_3 = Convolution2D(20, 1, 1, border_mode='same', activation='relu')(tower_3)
 
-	return output
+    output = merge([tower_0, tower_1, tower_2, tower_3], mode='concat', concat_axis=1)
+
+    return output
 
 class LeNet:
-	@staticmethod	
-	def build(width, height, depth, classes, mode, weightsPath=None):
-		# initialize the model
-		#model = Sequential()
-		inp = Input(shape=(depth, height, width))
-		
-		if mode == 1:
+    @staticmethod    
+    def build(width, height, depth, classes, mode, weightsPath=None):
+        # initialize the model
+        #model = Sequential()
+        inp = Input(shape=(depth, height, width))
 
-			print "Running MatFra Module"
+        if mode == 1:
 
-			inception = SabBido_module(inp)
-			a = Flatten()(inception)
-			a = Dense(classes)(a)
-			out = Activation("softmax")(a)
+            print "Running MatFra Module"
 
-			model = Model(input=[inp], output=[out])
-		
-			return model
+            inception = SabBido_module(inp)
+            a = Flatten()(inception)
+            a = Dense(200)(a)
+            a = Dense(classes)(a)
+            out = Activation("softmax")(a)
 
-		elif mode == 2:
+            model = Model(input=[inp], output=[out])
+        
+            return model
 
-			print "Running Google's Module"
+        elif mode == 2:
 
-			inception = Inception_module(inp)
-			a = Flatten()(inception)
-			a = Dense(classes)(a)
-			out = Activation("softmax")(a)
+            print "Running Google's Module"
 
-			model = Model(input=[inp], output=[out])
+            inception = Inception_module(inp)
+            a = Flatten()(inception)
+            a = Dense(classes)(a)
+            out = Activation("softmax")(a)
 
-			return model			
-		
-		# first set of CONV => RELU => POOL
-		#model.add(Convolution2D(20, 5, 5, border_mode="same", input_shape=(depth, height, width)))
-		#model.add(conv_spec(20, 5, 5, (depth, height, width), "same"))
-		#model.add(Activation("relu"))
-		
-		# model.add(Inception_module(depth, height, width))
-		# inception=Inception_module(inception)
-		# second set of CONV => RELU => POOL
-		# model.add(Convolution2D(50, 3, 3, border_mode="same"))
-		# model.add(Activation("relu"))
-			
-		# set of FC => RELU layers
-		# model.add(Flatten())
-		# model.add(Dense(100))
-		# model.add(Activation("relu"))
-				# softmax classifier
-		# model.add(Dense(classes))
-		# model.add(Activation("softmax"))
-		
+            model = Model(input=[inp], output=[out])
+
+            return model
+
+        # first set of CONV => RELU => POOL
+        #model.add(Convolution2D(20, 5, 5, border_mode="same", input_shape=(depth, height, width)))
+        #model.add(conv_spec(20, 5, 5, (depth, height, width), "same"))
+        #model.add(Activation("relu"))
+        
+        # model.add(Inception_module(depth, height, width))
+        # inception=Inception_module(inception)
+        # second set of CONV => RELU => POOL
+        # model.add(Convolution2D(50, 3, 3, border_mode="same"))
+        # model.add(Activation("relu"))
+            
+        # set of FC => RELU layers
+        # model.add(Flatten())
+        # model.add(Dense(100))
+        # model.add(Activation("relu"))
+                # softmax classifier
+        # model.add(Dense(classes))
+        # model.add(Activation("softmax"))
+        
