@@ -9,13 +9,14 @@ import keras
 from keras.layers import Input, merge
 
 def SabBido_module(inp):
-    tower_0 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
+    
+    tower_0 = Convolution2D(50, 1, 1, border_mode="same", activation='relu')(inp)
 
     tower_1 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-    tower_1 = Convolution2D(20, 3, 3, border_mode="same", activation='relu')(tower_1)
+    tower_1 = Convolution2D(50, 3, 3, border_mode="same", activation='relu')(tower_1)
 
     tower_2 = Convolution2D(20, 1, 1, border_mode="same", activation='relu')(inp)
-    tower_2 = Convolution2D(20, 5, 5, border_mode="same", activation='relu')(tower_2)    
+    tower_2 = Convolution2D(50, 5, 5, border_mode="same", activation='relu')(tower_2)    
 
     inception = merge([tower_0, tower_1, tower_2], mode='concat', concat_axis=1)
 
@@ -49,9 +50,12 @@ class LeNet:
 
             print "Running MatFra Module"
 
-            inception = SabBido_module(inp)
+            inception2 = SabBido_module(inp)
+            inception = SabBido_module(inception2)
             a = Flatten()(inception)
-            a = Dense(200)(a)
+
+            a = Dense(550)(a)
+            #a = Dense(250)(a)
             a = Dense(classes)(a)
             out = Activation("softmax")(a)
 

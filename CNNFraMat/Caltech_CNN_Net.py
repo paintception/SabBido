@@ -3,6 +3,8 @@ import argparse
 #import cv2
 #import seaborn
 import keras
+import os
+import time 
 
 from pyimagesearch.cnn.networks import LeNet
 from sklearn.cross_validation import train_test_split
@@ -147,6 +149,11 @@ def main():
 
     trainData, testData, trainLabels, testLabels = train_test_split(X, y, test_size=0.1, random_state=42)
 
+    print 'Deleting old logs in 3 sec...'
+    time.sleep(3)
+    items = os.listdir('/home/borg/Desktop/logs')
+    [os.remove('/home/borg/Desktop/logs/'+i ) for i in items] 
+
     for i in xrange(0, cross_validation_exp):
 
         print "Running Experiment: ", i
@@ -155,6 +162,8 @@ def main():
         #trainLabels = load_Train_labels()
         #testData = load_Validation_data()
         #testLabels = load_Validation_labels()
+    
+           
 
         tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/borg/Desktop/logs', histogram_freq=0, write_graph=True, write_images=False)
 
@@ -162,6 +171,8 @@ def main():
 
         model_MatFra = LeNet.build(width=8, height=8, depth=1, classes=3, mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
         model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+
+        
 
         history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=128, nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels), callbacks=[tbCallBack])
 
