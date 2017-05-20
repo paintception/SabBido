@@ -169,7 +169,7 @@ def main():
 
         print("[INFO] compiling model...")
 
-        model_MatFra = LeNet.build(width=8, height=8, depth=1, classes=3, mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
+        model_MatFra = LeNet.build(width=8, height=8, depth=1, classes=3, mode=3, weightsPath=args["weights"] if args["load_model"] > 0 else None)
         model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
         
