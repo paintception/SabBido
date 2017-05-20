@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(42)
 import argparse
 #import cv2
 #import seaborn
@@ -6,6 +7,7 @@ import keras
 import os
 import time
 import tensorflow as tf 
+from keras.callbacks import EarlyStopping
 
 from pyimagesearch.cnn.networks import LeNet
 from keras.optimizers import SGD
@@ -14,11 +16,6 @@ from keras.preprocessing.image import ImageDataGenerator
 from matplotlib import pyplot as plt
 
 
-def shape_data(dataset):
-    
-    dataset = np.reshape(dataset, (dataset.shape[0], 1, 8, 8))
-
-    return dataset
 
 def make_categorical(labels, n_classes):
     return(np_utils.to_categorical(labels, n_classes))
@@ -107,20 +104,17 @@ def main():
     config.gpu_options.allow_growth=True
     sess = tf.Session(config=config)
 
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-s", "--save-model", type=int, default=-1, help="(optional) whether or not model should be saved to disk")
-    ap.add_argument("-l", "--load-model", type=int, default=-1, help="(optional) whether or not pre-trained model should be loaded")
-    ap.add_argument("-w", "--weights", type=str, help="(optional) path to weights file")
-    args = vars(ap.parse_args())
+   
 
     #Param Configuration!    
 
-    path = '/home/borg/SabBido/DataSet/'
+    path = '/home/borg/sudoRepo/Thesis/DataSet/'
     pic_shape = (300,300,1)
-    n_epochs = 25
-    opt = SGD(lr=0.001)
-    n_classes = 21
-    train = False  # If false, load parameters and run validation!
+    n_epochs = 15
+    opt = SGD(lr=0.01)
+    adam = keras.optimizers.Adam(lr=0.0005, beta_1=0.9, beta_2=0.99, epsilon=1e-08, decay=0.0)
+    n_classes = 12
+    train = True  # If false, load parameters and run validation!
 
     precise_evaluation = False
     ##################################
@@ -129,9 +123,9 @@ def main():
     trainData = np.reshape(trainData,(trainData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
     trainLabels = np.load(path+'y.npy')
 
-    testData = np.load(path+'x.npy')
+    testData = np.load(path+'test_x.npy')
     testData = np.reshape(testData, (testData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
-    testLabels = np.load(path+'y.npy')
+    testLabels = np.load(path+'test_y.npy')
     print 'Data Loaded!'
     
     
@@ -140,30 +134,33 @@ def main():
 
 
     print 'Deleting old logs in 3 sec...'
-    time.sleep(3)
+    time.sleep(1)
     items = os.listdir('/home/borg/SabBido/logs')
     [os.remove('/home/borg/SabBido/logs/'+i ) for i in items] 
 
 
-    print "Running Experiment: ", i
-
 
     tbCallBack = keras.callbacks.TensorBoard(log_dir='/home/borg/SabBido/logs', 
-                            histogram_freq=0, write_graph=True, write_images=False)
+                            histogram_freq=0, write_graph=True, write_images=True)
 
     print("[INFO] compiling model...")
 
     model_MatFra = LeNet.build(pic_shape[0],pic_shape[1],pic_shape[2], classes=n_classes,
-             mode=1, weightsPath=args["weights"] if args["load_model"] > 0 else None)
-    model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+             mode=1)
+    model_MatFra.compile(loss="categorical_crossentropy", optimizer=adam, 
+                                metrics=["accuracy"])
 
+
+    model_MatFra.save_weights("../NN_param_sim/startingWeights.h5")
     print model_MatFra.summary()
     time.sleep(5)  
 
+    early_stopping = EarlyStopping(monitor='val_loss', patience=3)
+
     if train:
         history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=50,
-                 nb_epoch=n_epochs, verbose=1, validation_data=(testData, testLabels),
-                 callbacks=[tbCallBack])
+                 epochs=n_epochs, verbose=1, validation_data=(testData, testLabels),
+                 callbacks=[tbCallBack, early_stopping])
 
         # serialize model to JSON
         #model_json = model_MatFra.to_json()
@@ -171,14 +168,14 @@ def main():
         #    json_file.write(model_json)
 
         #serialize weights to HDF5
-        model_MatFra.save_weights("../NN_param/model.h5")
+        model_MatFra.save_weights("../NN_param_sim/model.h5")
         print("Saved model to disk")
 
     else:
 
-        model_MatFra.load_weights("../NN_param/model.h5")
+        model_MatFra.load_weights("../NN_param_sim/model.h5")
         print("[INFO] evaluating...")
-    (loss, accuracy) = model_MatFra.evaluate(testData, testLabels, batch_size=50, verbose=1)
+    (loss, accuracy) = model_MatFra.evaluate(testData, testLabels, batch_size=500, verbose=1)
     print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
 
     if precise_evaluation:
