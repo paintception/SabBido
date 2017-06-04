@@ -12,11 +12,11 @@ def SabBido_module(inp):
     
     #tower_0 = Convolution2D(7, 1, 1, border_mode="same", activation='relu')(inp)
 
-    tower_1 = Convolution2D(2, 1, 1, border_mode="same", activation='relu')(inp)
-    tower_1 = Convolution2D(4, 3, 3, border_mode="same", activation='relu')(tower_1)
+    tower_1 = Convolution2D(16, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_1 = Convolution2D(8, 3, 3, border_mode="same", activation='relu')(tower_1)
 
-    tower_2 = Convolution2D(2, 1, 1, border_mode="same", activation='relu')(inp)
-    tower_2 = Convolution2D(4, 5, 5, border_mode="same", activation='relu')(tower_2)    
+    tower_2 = Convolution2D(16, 1, 1, border_mode="same", activation='relu')(inp)
+    tower_2 = Convolution2D(8, 5, 5, border_mode="same", activation='relu')(tower_2)    
 
     #inception = merge([tower_0, tower_1, tower_2], mode='concat', concat_axis=1)
     inception = merge([ tower_1, tower_2], mode='concat', concat_axis=1)
@@ -26,6 +26,7 @@ def SabBido_module(inp):
 
 def scacchi_conv(inp):
 
+    conv1 = Convolution2D(64, 3, 3, border_mode="same", activation='relu')(inp)
     tower_1 = Convolution2D(64, 3, 3, border_mode="same", activation='relu')(inp)
     tower_2 = Convolution2D(64, 5, 5, border_mode="same", activation='relu')(inp)
     tower_3 = Convolution2D(64, 7, 7, border_mode="same", activation='relu')(inp)    
@@ -64,13 +65,13 @@ class LeNet:
 
             print "Running MatFra Module"
 
-            tower_1 = Convolution2D(20, kernel_size=(7), strides=(3), border_mode="valid", activation=lrelu)(inp)
+            tower_1 = Convolution2D(48, kernel_size=(7), strides=(3), border_mode="valid", activation='relu')(inp)
             tower_1 = Dropout(0.1)(tower_1)
-            tower_1 = Convolution2D(18, kernel_size=(9), strides=(2), border_mode="valid", activation=lrelu)(tower_1)
+            tower_1 = Convolution2D(32, kernel_size=(9), strides=(2), border_mode="valid", activation='relu')(tower_1)
             tower_1 = Dropout(0.1)(tower_1)
-            tower_1 = Convolution2D(10, kernel_size=(11), border_mode="valid", activation=lrelu)(tower_1)
+            tower_1 = Convolution2D(24, kernel_size=(11), border_mode="valid", activation='relu')(tower_1)
             tower_1 = Dropout(0.1)(tower_1)
-            tower_1 = Convolution2D(8, kernel_size=(22), border_mode="valid", activation=lrelu)(tower_1)
+            tower_1 = Convolution2D(16, kernel_size=(22), border_mode="valid", activation='relu')(tower_1)
             tower_1 = Dropout(0.1)(tower_1)
             #tower_1 = Convolution2D(32, kernel_size=(33), border_mode="valid", activation=lrelu)(tower_1)
             inception2 = SabBido_module(tower_1)

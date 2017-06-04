@@ -1,7 +1,7 @@
 import numpy as np
 np.random.seed(42)
 import argparse
-#import cv2
+import cv2
 #import seaborn
 import keras
 import os
@@ -9,7 +9,7 @@ import time
 import tensorflow as tf 
 from keras.callbacks import EarlyStopping
 
-from pyimagesearch.cnn.networks import LeNet
+from AutoEncNN import LeNet
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from keras.preprocessing.image import ImageDataGenerator
@@ -109,27 +109,29 @@ def main():
 
     #Param Configuration!    
 
-    path = '/home/borg/sudoRepo/Thesis/DataSet/'
+    path = '/home/borg/SabBido/DataSet/'
     pic_shape = (300,300,3)
     n_epochs = 5
     opt = SGD(lr=0.001)
     adam = keras.optimizers.Adam(lr=0.0005, beta_1=0.9, beta_2=0.99, epsilon=1e-08, decay=0.0)
     n_classes = 12
-    train = True  # If false, load parameters and run validation!
+    train = False  # If false, load parameters and run validation!
 
-    precise_evaluation = False
+    precise_evaluation = True
     ##################################
    
-    trainData = np.load(path+'x.npy')
-    trainData = np.reshape(trainData,(trainData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
-    trainLabels = np.load(path+'y.npy')
+    #trainData = np.load(path+'x.npy')
+    #trainData = np.reshape(trainData,(trainData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
+    #trainLabels = np.load(path+'y.npy')
+    trainData = np.load(path+'bido.npy')    
 
-    #trainData, testData, trainLabels, testLabels = train_test_split(
-    #trainData, trainLabels, test_size=0.2, random_state=0)
+    trainData, testData, trainLabels, testLabels = train_test_split(
+    trainData, trainData, test_size=0.2, random_state=0)
 
-    testData = np.load(path+'test_x.npy')
-    testData = np.reshape(testData, (testData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
-    testLabels = np.load(path+'test_y.npy')
+    #testData = np.load(path+'test_x.npy')
+    #testData = np.reshape(testData, (testData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
+    #testLabels = np.load(path+'test_y.npy')
+    
     print 'Data Loaded!'
     
     
@@ -151,51 +153,77 @@ def main():
 
     model_MatFra = LeNet.build(pic_shape[0],pic_shape[1],pic_shape[2], classes=n_classes,
              mode=1)
-    model_MatFra.compile(loss="categorical_crossentropy", optimizer=opt, 
-                                metrics=["accuracy"])
+    model_MatFra.compile(optimizer='adam', loss='mean_squared_error')
 
 
-    model_MatFra.save_weights("../NN_param_sim/startingWeights.h5")
-    #model_MatFra.load_weights("../NN_param_sim/startingWeights_working.h5")
+    #model_MatFra.save_weights("../NN_param_autoencoder/startingWeights.h5")
+    
     print model_MatFra.summary()
     time.sleep(5)  
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=3)
 
-    model_MatFra.load_weights("../NN_param_sim/model.h5")
     if train:
-        history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=50,
-                 epochs=n_epochs, verbose=1, validation_data=(testData, testLabels),
-                 callbacks=[tbCallBack, early_stopping])
 
-        # serialize model to JSON
-        #model_json = model_MatFra.to_json()
-        #with open("../NN_param/model.json", "w") as json_file:
-        #    json_file.write(model_json)
+        for ind in xrange(100):
+            try:
+                model_MatFra.load_weights("../NN_param_autoencoder_bido/model.h5")
+            except:
+                print 'No trained weight'
 
-        #serialize weights to HDF5
-        model_MatFra.save_weights("../NN_param_sim/model.h5")
-        print("Saved model to disk")
+            history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=30,
+                     epochs=n_epochs, verbose=1, validation_data=(testData, testLabels),
+                     callbacks=[tbCallBack])
+
+            # serialize model to JSON
+            #model_json = model_MatFra.to_json()
+            #with open("../NN_param/model.json", "w") as json_file:
+            #    json_file.write(model_json)
+
+            #serialize weights to HDF5
+            model_MatFra.save_weights("../NN_param_autoencoder_bido/model.h5")
+            model_MatFra.save_weights("../NN_param_autoencoder_bido/model_{}.h5".format(ind+1))
+            print("Saved model to disk")
 
     else:
 
-        model_MatFra.load_weights("../NN_param_sim/model.h5")
+        model_MatFra.load_weights("../NN_param_autoencoder_bido/model_10.h5")
         print("[INFO] evaluating...")
-    (loss, accuracy) = model_MatFra.evaluate(testData, testLabels, batch_size=50, verbose=1)
-    print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
+    #accuracy = model_MatFra.evaluate(testData, testLabels, batch_size=50, verbose=1)
+    #print("[INFO] accuracy: {:.2f}%".format(accuracy * 100))
+
 
     if precise_evaluation:
         print 'specific: '
-        for i in xrange(len(testData)):
+        #for ind in xrange(100):
+        ind =0
+        #    print 'using weight ', ind
+        #    model_MatFra.load_weights("../NN_param_autoencoder/model_{}.h5".format(ind))
+        for i in xrange(1):
+            i = 134
         # classify the digit
+            #pic = cv2.imread('/home/borg/SabBido/FaceDetect/Data/20160716_111233.jpg')
+            #pic = cv2.resize(pic, (150,150))
+            #pic = np.asarray(pic, dtype = np.float32)            
+            #pic = pic/255
+            
+            #orig = pic
+            orig = testData[i]
+            orig = orig *255
+            orig = np.array(orig, dtype = np.uint8)
             probs = model_MatFra.predict(testData[np.newaxis, i])
-            prediction = probs.argmax(axis=1)
-            print "#########################"
-            print testLabels[i] 
-            probs = np.round(probs, decimals = 2)           
-            print probs
-            print "-------------------------"
-            time.sleep(0.5)
+            #pic = pic.reshape((1,150,150,3))  
+            #probs = model_MatFra.predict(pic)
+        
+            probs = probs *255
+            probs = np.array(probs, dtype = np.uint8)
+            probs = probs.reshape(pic_shape)
+            cv2.imwrite('/home/borg/SabBido/test/pic_{}_{}.jpg'.format(ind, i), probs)
+            cv2.imwrite('/home/borg/SabBido/test/original.jpg'.format(ind, i), orig)
+            cv2.imshow('original',testData[i])
+            cv2.imshow('recunstructed', probs)
+            cv2.waitKey(1) 
+            #time.sleep(1.5)
 
       
 
