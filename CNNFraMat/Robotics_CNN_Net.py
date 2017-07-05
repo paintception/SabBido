@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 
 
 
+
 def make_categorical(labels, n_classes):
     return(np_utils.to_categorical(labels, n_classes))
 
@@ -111,10 +112,10 @@ def main():
 
     path = '/home/borg/sudoRepo/Thesis/DataSet/'
     pic_shape = (300,300,3)
-    n_epochs = 5
+    n_epochs = 50
     opt = SGD(lr=0.001)
     adam = keras.optimizers.Adam(lr=0.0005, beta_1=0.9, beta_2=0.99, epsilon=1e-08, decay=0.0)
-    n_classes = 12
+    n_classes = 10
     train = True  # If false, load parameters and run validation!
 
     precise_evaluation = False
@@ -124,12 +125,12 @@ def main():
     trainData = np.reshape(trainData,(trainData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
     trainLabels = np.load(path+'y.npy')
 
-    #trainData, testData, trainLabels, testLabels = train_test_split(
-    #trainData, trainLabels, test_size=0.2, random_state=0)
+    trainData, testData, trainLabels, testLabels = train_test_split(
+    trainData, trainLabels, test_size=0.2, random_state=0)
 
-    testData = np.load(path+'test_x.npy')
-    testData = np.reshape(testData, (testData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
-    testLabels = np.load(path+'test_y.npy')
+    #testData = np.load(path+'test_x.npy')
+    #testData = np.reshape(testData, (testData.shape[0], pic_shape[0],pic_shape[1],pic_shape[2]))
+    #testLabels = np.load(path+'test_y.npy')
     print 'Data Loaded!'
     
     
@@ -155,14 +156,14 @@ def main():
                                 metrics=["accuracy"])
 
 
-    model_MatFra.save_weights("../NN_param_sim/startingWeights.h5")
+    #model_MatFra.save_weights("../NN_param_sim/startingWeights.h5")
     #model_MatFra.load_weights("../NN_param_sim/startingWeights_working.h5")
     print model_MatFra.summary()
     time.sleep(5)  
 
-    early_stopping = EarlyStopping(monitor='val_loss', patience=3)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5)
 
-    model_MatFra.load_weights("../NN_param_sim/model.h5")
+    #model_MatFra.load_weights("../NN_param_sim/model.h5")
     if train:
         history_MatFra = model_MatFra.fit(trainData, trainLabels, batch_size=50,
                  epochs=n_epochs, verbose=1, validation_data=(testData, testLabels),

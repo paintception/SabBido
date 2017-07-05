@@ -65,8 +65,11 @@ class LeNet:
 
             print "Running MatFra Module"
 
-            tower_1 = Convolution2D(48, kernel_size=(7), strides=(3), border_mode="valid", activation='relu')(inp)
+            tower_1 = Convolution2D(48, kernel_size=(7), strides=(3), border_mode="valid", activation='relu')(inp) 
             tower_1 = Dropout(0.1)(tower_1)
+
+            #test_1  = Convolution2D(9, kernel_size=(77), strides=(75), border_mode="same", activation='relu')(inp)
+
             tower_1 = Convolution2D(32, kernel_size=(9), strides=(2), border_mode="valid", activation='relu')(tower_1)
             tower_1 = Dropout(0.1)(tower_1)
             tower_1 = Convolution2D(24, kernel_size=(11), border_mode="valid", activation='relu')(tower_1)
@@ -78,14 +81,17 @@ class LeNet:
             #inception = SabBido_module(inception2)
             a = Flatten()(inception2)
             a = Dropout(0.3)(a)
+            #b = Flatten()(test_1)
+            #c = merge([a, b], mode='concat', concat_axis=1)
+            #c = Dense(200)(c)
             a = Dense(200)(a)
-            #a = Dense(250)(a)
             a = Dense(classes)(a)
             out = Activation("softmax")(a)
 
             model = Model(input=[inp], output=[out])
         
             return model
+        
 
         elif mode == 2:
 
