@@ -33,6 +33,14 @@ def randomize(inp, out):
 
     return(np.asarray(n_inp), np.asarray(n_out))
 
+def resize_pic(pic, shape = (64,64)):
+    pic = pic *255
+    pic = np.asarray(pic, dtype = np.uint8)
+    pic = cv2.resize(pic, shape)
+    pic = np.asarray(pic, dtype = np.float32)
+    pic = pic / 255.
+    return pic
+
 
 
 def combine_images(generated_images):
@@ -66,15 +74,18 @@ def main():
     #path = '/home/borg/sudoRepo/Thesis/DataSet/'    
     pic_shape = (128,128,3)
     n_epochs = 10000
-    n_batch = 50
-    opt = SGD(lr=0.001)
-    adam = keras.optimizers.Adam(lr=0.0005, beta_1=0.5, beta_2=0.99, epsilon=1e-08, decay=0.0)
+    n_batch = 25
+    opt = SGD(lr=0.0001)
+    adam = keras.optimizers.Adam(lr=0.00005, beta_1=0.5, beta_2=0.99, epsilon=1e-08, decay=0.0)
     
     train = True  # If false, load parameters and run validation!
 
     precise_evaluation = False
     ##################################
     X_train = np.load(path+'bido_128.npy')
+
+    #tmp = [resize_pic(pic) for pic in X_train]
+    #X_train = np.asarray(tmp)
     #trainData = trainData*2 -1
 
     #X_train, X_test, y_train,  y_test = train_test_split(
@@ -110,13 +121,13 @@ def main():
 
     discriminator_on_generator = generator_containing_discriminator(generator, discriminator)
 
-    generator.compile(loss='mean_squared_error', optimizer=opt)
+    generator.compile(loss='logarimic_crossentropy', optimizer=opt)
     discriminator.trainable = False
 
-    discriminator_on_generator.compile(loss='categorical_crossentropy', optimizer=opt)
+    discriminator_on_generator.compile(loss='logarimic_crossentropy', optimizer=opt)
 
     discriminator.trainable = True
-    discriminator.compile(loss='categorical_crossentropy', optimizer=opt)
+    discriminator.compile(loss='logarimic_crossentropy', optimizer=opt)
 
     
 
@@ -144,41 +155,47 @@ def main():
 
             image_batch = X_train[index*n_batch:(index+1)*n_batch]
             generated_images = generator.predict(noise, verbose=0)
-            cv2.imshow('real', cv2.resize(image_batch[0],(600,600)))
-            cv2.imshow('gene', cv2.resize(generated_images[0],(600,600)))
-            cv2.waitKey(200)
-            if index % 20 == 0:
+
+            
+            if index % 500 == 0:
                 print 'min_real: ', image_batch.min()
                 print 'max_real: ', image_batch.max()
                 print 'min: ', generated_images.min()
                 print 'max: ', generated_images.max()
                 print 'shape: ', generated_images.shape
                 print 'shape pic : ', generated_images[0].shape
-                path ='./ris/'
+                path ='./ris3/'
                 #try:
                 #    os.mkdir(path)
                 #except:
                 #    pass
                 #for indd,pic in enumerate(generated_images):
-                    #pic = (pic+1)/2.
+                #pic = (pic+1)/2.
                 pic = generated_images[0]    
                 pic = pic *255
                 pic = np.asarray(pic, dtype = np.uint8)
                 cv2.imwrite(path+'/pic_{}_{}.png'.format(epoch,index), pic)
+                cv2.imshow('real', cv2.resize(image_batch[0],(600,600)))
+                cv2.imshow('gene', cv2.resize(generated_images[0],(600,600)))
+                cv2.waitKey(200)
                 
 
             X = np.concatenate((image_batch, generated_images))
-            y = [[1,0]] * n_batch + [[0,1]] * n_batch
+            y = [0.9] * n_batch + [0] * n_batch
             X,y=randomize(X,y)
             d_loss = discriminator.train_on_batch(X, y)
-            print("batch %d d_loss : %f" % (index, d_loss))
-            for i in range(n_batch):
-                noise[i, :] = np.random.uniform(0, 1, 100)
+            
+            #for i in range(n_batch):
+            #    noise[i, :] = np.random.uniform(0, 1, 100)
             #discriminator.trainable = False
+            
+            #if index %2 ==0:
             g_loss = discriminator_on_generator.train_on_batch(
-                            noise, [[1,0]] * n_batch)
+                                noise, [0.9] * n_batch)
             #discriminator.trainable = True
-            print("batch %d g_loss : %f" % (index, g_loss))
+            if index % 30 == 0:
+                print("batch %d g_loss : %f" % (index, g_loss))
+                print("batch %d d_loss : %f" % (index, d_loss))
             '''
             d_loss = discriminator.train_on_batch(X, y)
             print("batch %d d_loss : %f" % (index, d_loss))
@@ -190,9 +207,11 @@ def main():
             discriminator.trainable = True
             print("batch %d g_loss : %f" % (index, g_loss))
             '''
-            if index % 10 == 9:
-                generator.save_weights('generator', True)
-                discriminator.save_weights('discriminator', True)
+            #if index % 10 == 9:
+        generator.save_weights('generator', True)
+        discriminator.save_weights('discriminator', True)
+
+        
             
 
 

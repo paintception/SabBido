@@ -17,19 +17,23 @@ from keras.layers.normalization import BatchNormalization
 def generator_model():
 
     
-    keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=42)
+    a=keras.initializers.RandomNormal()
     model = Sequential()
-    model.add(Dense(input_dim=100, output_dim=1024*4*4,kernel_initializer='random_uniform'))
+    model.add(Dense(input_dim=100, output_dim=1024*4*4,activation='relu', kernel_initializer=a))
     #model.add(BatchNormalization())  
     model.add(Reshape((4,4,1024))) 
-    model.add(Deconvolution2D(512, kernel_size=(3), strides=(2), border_mode="same", activation='relu', kernel_initializer='random_uniform'))
+    model.add(Deconvolution2D(512, kernel_size=(3), strides=(2), border_mode="same", activation='relu', kernel_initializer=a))
+    #model.add(BatchNormalization())
+    
+    model.add(Deconvolution2D(256, kernel_size=(3), strides=(2), border_mode="same", activation='relu', kernel_initializer=a))
+    #model.add(BatchNormalization())
+    
+    model.add(Deconvolution2D(128, kernel_size=(3), strides=(2), border_mode="same", activation='relu', kernel_initializer=a))
     model.add(BatchNormalization())
-    model.add(Deconvolution2D(256, kernel_size=(5), strides=(2), border_mode="same", activation='relu', kernel_initializer='random_uniform'))
-    model.add(BatchNormalization())
-    model.add(Deconvolution2D(128, kernel_size=(5), strides=(2), border_mode="same", activation='relu', kernel_initializer='random_uniform'))
-    model.add(BatchNormalization())
-    model.add(Deconvolution2D(64, kernel_size=(5), strides=(2), border_mode="same", activation='relu', kernel_initializer='random_uniform'))
-    model.add(BatchNormalization())
+    
+    model.add(Deconvolution2D(64, kernel_size=(5), strides=(2), border_mode="same", activation='relu', kernel_initializer=a))
+    #model.add(BatchNormalization())
+    
     model.add(Deconvolution2D(3 , kernel_size=(5), strides=(2), border_mode="same", activation='sigmoid', kernel_initializer='random_uniform'))
     #model.add(BatchNormalization(axis = 1))
 
@@ -38,20 +42,21 @@ def generator_model():
 
 def discriminator_model():
     keras.initializers.Initializer()
-    keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=42)
-    lrelu = keras.layers.advanced_activations.LeakyReLU(alpha=0.03)
+    #keras.initializers.RandomNormal(mean=0.0, stddev=0.05, seed=42)
+    lrelu = keras.layers.advanced_activations.LeakyReLU(alpha=0.003)
     model = Sequential()
-    model.add(Convolution2D(64, input_shape=(128,128,3), kernel_size=(5), strides=(2), border_mode="same", activation='relu'))
-    model.add(Convolution2D(128, kernel_size=(5), strides=(2), border_mode="same", activation=lrelu))
-    #model.add(BatchNormalization(axis = 1))
-    model.add(Convolution2D(256, kernel_size=(5), strides=(2), border_mode="same", activation=lrelu))
-    #model.add(BatchNormalization(axis = 1))
-    model.add(Convolution2D(512, kernel_size=(5), strides=(2), border_mode="same", activation=lrelu))
-    #model.add(BatchNormalization(axis = 1))
-    model.add(Convolution2D(1024, kernel_size=(5), strides=(2), border_mode="same", activation=lrelu))
-    #model.add(BatchNormalization(axis = 1))
+    model.add(Convolution2D(128, input_shape=(128,128,3), kernel_size=(5), strides=(2), border_mode="same", kernel_initializer='random_uniform', activation=lrelu))
+    #model.add(Convolution2D(128, kernel_size=(5), strides=(2), border_mode="same", activation=lrelu))
+    #model.add(BatchNormalization())
+    #model.add(Dropout(0.2)
+    model.add(Convolution2D(256, kernel_size=(5), strides=(2), border_mode="same", kernel_initializer='random_uniform', activation=lrelu))
+    #model.add(BatchNormalization())
+    model.add(Convolution2D(512, kernel_size=(3), strides=(2), border_mode="same", kernel_initializer='random_uniform', activation=lrelu))
+    #model.add(BatchNormalization())
+    model.add(Convolution2D(1024, kernel_size=(3), strides=(2), border_mode="same", kernel_initializer='random_uniform', activation=lrelu))
+    #model.add(BatchNormalization())
     model.add(Flatten())
-    model.add(Dense(2, activation = 'softmax'))
+    model.add(Dense(1, activation = 'sigmoid'))
 
     return model
 
