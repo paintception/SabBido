@@ -1,0 +1,36 @@
+%% 
+%% This is file `sciposter36.clo' v 1.0
+%%
+%% Author Michael H.F. Wilkinson
+%%   September 8, 2006
+%%    
+
+\ProvidesFile{sciposter36.clo}[2006/09/07 v1.0 font declarations for sciposter.cls v2.0]
+
+\renewcommand{\tiny}{\fontsize{17.28}{22}\selectfont}
+\renewcommand{\scriptsize}{\fontsize{20.74}{25}\selectfont}
+\renewcommand{\footnotesize}{\fontsize{24.88}{30}\selectfont}
+\renewcommand{\small}{\fontsize{29.86}{37}\selectfont}
+\renewcommand{\normalsize}{\fontsize{35.83}{45}\selectfont}
+\renewcommand{\large}{\fontsize{43}{54}\selectfont}
+\renewcommand{\Large}{\fontsize{51.6}{64}\selectfont}
+\renewcommand{\LARGE}{\fontsize{61.92}{77}\selectfont}
+\renewcommand{\huge}{\fontsize{74.3}{93}\selectfont}
+\renewcommand{\Huge}{\fontsize{89.16}{112}\selectfont}
+\newcommand{\veryHuge}{\fontsize{107}{134}\selectfont}
+\newcommand{\VeryHuge}{\fontsize{128.4}{160}\selectfont}
+\newcommand{\VERYHuge}{\fontsize{154.08}{193}\selectfont}
+
+\newcommand{\titlesize}{\veryHuge}
+\newcommand{\authorsize}{\LARGE}
+\newcommand{\instsize}{\Large}
+       
+\setlength\smallskipamount{10pt plus 2pt minus 2pt}
+\setlength\medskipamount{18pt plus 6pt minus 6pt}
+\setlength\bigskipamount{36pt plus 11pt minus 11pt}
+
+\setlength\abovecaptionskip{36pt}
+\setlength\belowcaptionskip{0pt}
+\setlength\abovedisplayskip{36pt plus 9pt minus 19 pt}
+\setlength\abovedisplayshortskip{0pt plus 6pt}
+\setlength\belowdisplayshortskip{18pt plus 9pt minus 9pt}

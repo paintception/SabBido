@@ -1,0 +1,35 @@
+\begin{thebibliography}{1}
+
+\bibitem{CrommelinOpsteeghVerhulst:04}
+D.T. Crommelin, J.D. Opsteegh, and F.~Verhulst.
+\newblock A {Mechanism} for {Atmospheric} {Regime} {Behavior}.
+\newblock {\em Journal of the Atmospheric Sciences}, 61:1406--1419, 2004.
+
+\bibitem{gers1999learning}
+Felix~A Gers, J{\"u}rgen Schmidhuber, and Fred Cummins.
+\newblock Learning to {Forget}: {Continual} {Prediction} with {LSTM}.
+\newblock {\em IET Conference Proceedings}, pages 850--855, 1999.
+
+\bibitem{he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep {Residual} {Learning} for {Image} {Recognition}.
+\newblock In {\em Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 770--778, 2016.
+
+\bibitem{jordan1994hierarchical}
+Michael~I Jordan and Robert~A Jacobs.
+\newblock Hierarchical {Mixtures} of {Experts} and the {EM} {Algorithm}.
+\newblock {\em Neural computation}, 6(2):181--214, 1994.
+
+\bibitem{lipton2015critical}
+Zachary~C Lipton, John Berkowitz, and Charles Elkan.
+\newblock A {Critical} {Review} of {Recurrent} {Neural} {Networks} for
+  {Sequence} {Learning}.
+\newblock {\em arXiv preprint arXiv:1506.00019}, 2015.
+
+\bibitem{SHRBV:2012}
+A.E. Sterk, M.P. Holland, P.~Rabassa, H.W. Broer, and R.~Vitolo.
+\newblock Predictability of extreme values in geophysical models.
+\newblock {\em Nonlinear Processes in Geophysics}, 19:529--539, 2012.
+
+\end{thebibliography}

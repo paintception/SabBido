@@ -1,0 +1,230 @@
+\documentclass[a0, portrait]{IWIposter}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+
+
+
+\title{Predicting Chaotic Time Series using Machine Learning Techniques}
+
+\author{\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} cccc}
+Henry Maathuis \hspace{1cm} & Luuk Boulogne & Marco Wiering & Alef Sterk \\
+%University of Groningen & University of Groningen & University of Groningen & University of Groningen \\
+maathuishenry@gmail.com & lhboulogne@gmail.com & m.a.wiering@rug.nl & a.e.sterk@rug.nl
+\end{tabular*}
+}
+\institute{}
+
+\DeclareMathOperator{\mean}{E}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\MSE}{MSE}
+\DeclareMathOperator{\Cov}{Cov}
+
+\begin{document}
+
+\conference{Benelux Conference on Artificial Intelligence, Groningen, The Netherlands, 2017}
+
+\setlength{\columnseprule}{1pt}
+
+\maketitle
+
+\begin{multicols}{3}
+
+%===============================================================================
+
+\section*{Introduction}
+
+\begin{itemize}
+\item
+
+Most problems in nature, including prediction problems, deal with nonlinear or chaotic data. This makes them difficult to predict.
+
+\item
+Previous research on weather forecasting involves Neural Networks (NN) such as Multi-Layer Perceptrons (MLP) and Radial Basis Function NNs.
+
+\item
+In this research we compare different Neural Networks: MLPs, Residual MLPs and LSTMs. These networks are embedded in a Hierarchical Mixture of Experts (HME) architecture. 
+
+\item
+\textbf{We are interested to see whether HME ensembles improve chaotic time series prediction in terms of generalization accuracy.} 
+
+\end{itemize}
+
+%===============================================================================
+
+\section*{Data Sets}
+\label{sec:datasets}
+
+
+Three different data sets are considered in our work: logistic map, intermittency map and a six-dimensional midlatitude atmospheric circulation model.
+
+\paragraph{Logistic Map}
+\begin{equation}
+\label{logmap}
+f : [0,1] \to [0,1], \quad f(x) = rx(1-x),
+\end{equation}
+where $0 < r \leq 4$ is a parameter.
+
+\paragraph{Intermittency Map}
+
+\begin{equation}
+\label{intmap}
+f : [0,1]\to[0,1], \quad
+f(x) =
+\begin{cases}
+x(1+(2x)^\alpha) & \text{ if } 0 \leq x \leq \frac{1}{2}, \\
+2x-1 & \text{ if } \tfrac{1}{2} < x \leq 1,
+\end{cases}
+\end{equation}
+where $0 < \alpha < 1$ is a parameter. 
+
+\paragraph{Atmosphere Model}
+The simplest model for the midlatitude atmospheric circulation is the barotropic
+vorticity equation for flow over an orography profile (i.e., mountains):
+\begin{equation}\label{bve}
+\frac{\partial}{\partial t}\Delta\psi
+=
+-J(\psi, \Delta\psi + \beta y + \gamma h) - C \Delta(\psi - \psi^*),
+\end{equation}
+where $\psi$ is the stream function which describes the atmospheric velocity
+field, $\psi^*$ is the forcing, $\beta$ controls the Coriolis force, and $h$ is
+the orography profile. The differential operators $\Delta$ and $J$ are defined
+as $\Delta f = f_{xx} + f_{yy}$ and $J(f,g)=f_x g_y-f_y g_x$, respectively.
+For parameter settings and boundary conditions, see
+\cite{CrommelinOpsteeghVerhulst:04,SHRBV:2012}.
+
+%===============================================================================
+
+\section*{System Design}
+
+In this work, two different Neural Network (NN) regressors are considered to learn the behavior of the dynamical systems.
+
+\paragraph{Multi-Layer Perceptrons (MLP)}
+The MLP is a very popular NN used in a lot of different tasks in which a nonlinear problem is to be solved. An MLP maps an input vector to an output vector: $f: R^{input} \rightarrow R^{output}$.
+
+\paragraph{Residual MLP}
+
+A residual MLP is an NN that utilizes residual learning blocks. In a residual learning block the output is represented as: 
+
+\begin{equation}
+\label{eq:mapping}
+y = f(x) + x.
+\end{equation}
+
+Empirical evidence has shown that residual learning blocks can reduce the error of NNs and allow for easier optimization. A schematic overview of the residual learning block is shown in Figure \ref{fig:residblock}.
+
+\paragraph{Long Short-Term Memory (LSTM)}
+In MLPs a layer of neurons only contains forward connections to subsequent layers. Layers in Recurrent NNs also have connections to themselves and preceding layers. LSTMs are such a type of NN that allows the past to be taken into account in time step predictions. An overview of the LSTM memory cell is shown in Figure \ref{fig:memcell}.
+
+\begin{figure}
+\subfigure[]{\label{fig:residblock}\includegraphics[width=0.48\textwidth]{fig/ResBlock.pdf}}
+\hspace{0.05\textwidth}
+\subfigure[]{\label{fig:memcell}\includegraphics[width=0.37\textwidth]{fig/lstmcell.pdf}}
+\centering
+\caption{(a): A residual learning block as described in~\cite{he2016deep}. (b): The LSTM memory cell extended with forget gates \cite{gers1999learning}, after \cite{lipton2015critical}.}
+\end{figure}
+
+\paragraph{Hierarchical Mixture of Experts (HME)}
+The HME is a hierarchical structure of Mixtures of Experts (MoE). The MoE architecture consists of a manager (or gate) and a variable amount of experts. The manager decides how much the output of each expert contributes to the final prediction. This architecture allows expert networks to specialize in certain input regions such that the problem complexity is reduced for the separate experts.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{fig/2layer.pdf}
+\caption{Hierarchical Mixture of Experts model of depth two. Reprinted from \cite{jordan1994hierarchical}.}
+\label{fig:hme}
+\end{figure}
+
+\section*{Results}
+\begin{itemize}
+
+\item The best performing NNs for each network type (bold rows in Table \ref{tab:prelimres}) were used for the experts and managers in the HMEs. The newly constructed models were trained end-to-end with backpropagation.
+
+\item For each type of NN, 10 regressors are evaluated given multiple starting states. The resulting evaluations are averaged elementwise to obtain a single sequence of error measures for each regressor. The mean of this sequence is used to measure the performance on sequence prediction (Table \ref{tab:selection}).
+\end{itemize}
+
+\begin{table}
+\centering
+\caption{For each data type, the best performing NN type after a hyperparameter search on \textbf{single step prediction} is shown in bold.}
+\label{tab:prelimres}
+\begin{tabular}{>{\rowmac}l|>{\rowmac}l|>{\rowmac}l<{\clearrow}}
+\noalign{\smallskip}
+Data                              &                   NN type       & MSE\\\hline\hline
+\multirow{3}{*}{Intermittency}    & \setrow{\bfseries}MLP           & $\mathbf{1.60\times10^{-4}}$  \\
+                                  &                 Residual MLP          & $4.83\times10^{-4}$  \\
+                                  &                   LSTM          & $4.19\times10^{-3}$  \\\hline
+\multirow{3}{*}{Logistic}         &                   MLP            & $1.53\times10^{-8}$ \\
+                                  & \setrow{\bfseries}Residual MLP         &  $\mathbf{6.00\times10^{-9}}$  \\
+                                  &                   LSTM           &   $2.82\times10^{-3}$ \\\hline
+\multirow{3}{*}{Atmosphere}      &                      MLP          & $8.12\times10^{-8}$  \\
+                                  & \setrow{\bfseries}Residual MLP        & $\mathbf{2.29\times10^{-8}}$  \\
+                                  &                   LSTM          & $6.99\times10^{-6}$  \\\hline
+                                  
+\noalign{\smallskip}
+\end{tabular}
+\end{table}
+
+
+\begin{table}[]
+\centering
+\caption{The lowest mean validation loss on \textbf{sequence prediction} of the single best NN of each NN type for each data set. The best performing NNs are shown in bold.}
+\label{tab:selection}
+\begin{tabular}{>{\rowmac}l|>{\rowmac}l|>{\rowmac}l<{\clearrow}}
+Data                            & NN type      & Lowest mean loss \\\hline\hline
+\multirow{4}{*}{Intermittency}  & \setrow{\bfseries}HME          & $\mathbf{0.158152}$                             \\
+                                & Residual MLP & 0.327154                             \\
+                                & MLP          & 0.160673                             \\
+                                & LSTM         & 0.164677                             \\\hline
+\multirow{4}{*}{Logistic}       & \setrow{\bfseries}HME          & $\mathbf{0.219681}$                                 \\
+                                & Residual MLP & 0.220254                                 \\
+                                & MLP          & 0.222794                                 \\
+                                & LSTM         & 14.86825                                 \\\hline
+\multirow{4}{*}{Atmosphere}     & \setrow{\bfseries}HME          & $\mathbf{0.008987}$                               \\
+                                & Residual MLP & 0.010553                                \\
+                                & MLP          & 0.010731                                \\
+                                & LSTM         & 0.027812                                \\\hline
+\end{tabular}
+\end{table}
+
+
+%===============================================================================
+\section*{Discussion}
+
+
+\begin{itemize}
+\item The results obtained with the intermittency data show that the sequence prediction performance of the NNs are worse than the baseline regressor.
+\item For the logistic map data, the baseline performance exceeds the performance of the selected Neural Network within this interval [6, 9]. However one should note that the selected HME performs better in the range [10, 15]. After data point 15 there is no evidence that either the baseline or the HME outperforms one another.
+\item On atmosphere data prediction, an HME with Residual MLPs for managers and experts reliably outperforms the baseline of 1NN for about 24 days (96 time steps).
+\end{itemize}
+
+\begin{figure}
+\centering
+\hspace*{0.35cm}\subfigure[]{\label{fig:intermittency}\includegraphics[width=0.98\textwidth]{fig/intermittency.pdf}}
+\subfigure[]{\label{fig:logistic}\includegraphics[width=0.9\textwidth]{fig/logistic.pdf}}
+\subfigure[]{\label{fig:atmosphere}\includegraphics[width=0.925\textwidth]{fig/atmosphere.pdf}}
+\caption{Sequence prediction on intermittency map (a), logistic map (b) and atmosphere (c) test data. }
+\label{fig:plots}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{fig/general_results.pdf}
+\caption{Example of atmosphere data prediction by an HME over 50 days. HMEs are able to capture the general behavior of the atmospheric dynamical system.}
+\label{fig:genbehavior}
+\end{figure}
+
+\section*{Conclusion}
+\begin{itemize}
+\item Compared to the 1-Nearest Neighbor baseline, the NNs used in this work are not suitable for dynamical systems such as the intermittency and logistic map. However, for the first few months of the atmosphere data, the baseline is clearly outperformed by the HME. 
+\item The results indicate that \textbf{the HME architecture helps in reducing the generalisation error of dynamical system predictions}, since for every data set tested, better results were obtained with using this architecture than without.
+\end{itemize}
+
+\bibliographystyle{plain}
+\bibliography{mybibfile}
+\end{multicols}
+
+\end{document}
