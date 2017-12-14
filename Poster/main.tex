@@ -36,7 +36,6 @@ Francesco Bidoia$^{1}$ \hspace{0.5cm} & Matthia Sabatelli$^{1,2}$ \hspace{0.5cm}
 
 \begin{document}
 
-
 \conference{The 7th International Conference on Pattern Recognition Applications and Methods (ICPRAM)}
 
 \setlength{\columnseprule}{1pt}
@@ -52,7 +51,7 @@ Francesco Bidoia$^{1}$ \hspace{0.5cm} & Matthia Sabatelli$^{1,2}$ \hspace{0.5cm}
 \begin{itemize}
 	\item Autonomous Navigation Systems (ANS) have recently gained a lot of attention from various research domains, nevertheless in order to work well, most of them are based on fairly expensive sensor technologies.
 	\item As a solution it is possible to build the ANS based only on visual input (i.e. camera) which, in combination with the odometry of the system, allow the system to map an environment and navigate.
-	\item In this work we show that standard Computer Vision and Deep Learning algorithms fail in understanding the visual information that is received as input from a camera. This is given due to their lack in preserving the \textbf{Geometrical Properties} of the images. The consequence of this lack of understanding turns into an ANS which is unable to \textbf{localyze} itself.
+	\item In this work we show that standard Computer Vision and Deep Learning algorithms fail in understanding the visual information that is received as input from a camera. This is given due to their lack in preserving the \textbf{Geometrical Properties} of the images. The consequence of this lack of understanding turns into an ANS which is unable to \textbf{localize} itself.
 	\item To solve this problem we present a novel \textbf{Deep Convolutional Neural Network} \cite{szegedy2015going} inspired by the famous \textit{Inception Module} \cite{szegedy2016rethinking} which is tested on $2$ Datasets that we have created: the first one is used for \textit{Scene Recogntion} while the latter one for \textit{Location Recognition}.
 \end{itemize}
 
@@ -142,7 +141,7 @@ This Artificial Neural Network consists in:
 	\item Similarly a $3 \times 3$ convolution is replaced by $3 \times 1$ and $1 \times 3$ convolutions
 	\item We take the original architecture publicly available on \verb#GitHub# \footnote{
 \url{https://github.com/tensorflow/models/tree/master/inception}} and train only a final fully connected layer of $250$ hidden units
-	\item $\approx 1.3$ millions of parameters have to be trained
+	\item $\approx 1.3$ million of parameters have to be trained
 	\item Due to the extensive use of \textbf{Pooling} the geometrical properties of the inputs get changed misleading the \textbf{Localization} phase
 
 \end{itemize}
@@ -159,7 +158,7 @@ This Artificial Neural Network consists in:
 
 \section*{Novel Deep Convolutional Neural Network Architecture}
 
-We propose he following neural architecture.
+We propose the following neural architecture.
 
 \centering
 \subsubsection*{Motivation}
@@ -201,15 +200,15 @@ We propose he following neural architecture.
 \label{tab:tab1}
 \begin{tabular}{>{\rowmac}l|>{\rowmac}l|>{\rowmac}l|>{\rowmac}l<{\clearrow}}
 \textbf{Algorithm}   & \textbf{Validation-Set} & \textbf{Testing-Set} & \textbf{$\tau$}  \\ \hline
-        BOW                    & $89.7\%$             & $88.5\%$           & $72\%$    \\
-        Inception $V3$         & $100\%$              & $100\%$            & $2.3\%$     \\
-        DCNN                   & $100\%$              & $98.7\%$           & $1.5\%$          \\
+        BOW                    & $89.7\%$             & $88.5\%$           & $72$    \\
+        Inception $V3$         & $100\%$              & $100\%$            & $2.3$     \\
+        DCNN                   & $100\%$              & $98.7\%$           & $1.5$          \\
 \end{tabular}\label{tab:tab1}
 \end{table}
 
 \begin{itemize}
 	\item Despite being the architecture performing best we see that the Inception $V3$ does not generalize when tested on the Location Dataset.
-	\item We report in Table the accuracies of the neural architectures. We introduce the class \textbf{Tricked} in which we report if the ANN labels a flipped image as an original one.
+	\item We report in Table \ref{tab:tab2} the accuracies of the neural architectures. We introduce the class \textbf{Tricked} in which we report if the ANN labels a flipped image as an original one.
 \end{itemize}
 
 \centering
