@@ -21,12 +21,13 @@
 Geometry Based Information}
 
 \author{\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} ccccc}
-Francesco Bidoia \hspace{0.5cm} & Matthia Sabatelli \hspace{0.5cm} & Amirhossein Shantia \hspace{0.5cm} Marco A. Wiering \hspace{0.5cm} & Lambert Schomaker  \\
-%University of Groningen & University of Groningen & University of Groningen & University of Groningen \\
+Francesco Bidoia$^{1}$ \hspace{0.5cm} & Matthia Sabatelli$^{1,2}$ \hspace{0.5cm} & Amirhossein Shantia$^{1}$ \hspace{0.5cm} Marco A. Wiering$^{1}$ \hspace{0.5cm} & Lambert Schomaker$^{1}$  \\
 %josephgk@hotmail.nl & m.a.wiering@rug.nl & madalina.drugan@gmail.com
 \end{tabular*}
 }
-\institute{}
+\institute{$^{1}$Institute of Artificial Intelligence and Cognitive Engineering, University of Groningen \\
+	$^{2}$ Montefiore Institute, Department of Electrical Engineering and Computer Science, Universit\'e de Li\`ege, Belgium
+}
 
 \DeclareMathOperator{\mean}{E}
 \DeclareMathOperator{\var}{Var}
@@ -50,8 +51,8 @@ Francesco Bidoia \hspace{0.5cm} & Matthia Sabatelli \hspace{0.5cm} & Amirhossein
 
 \begin{itemize}
 	\item Autonomous Navigation Systems (ANS) have recently gained a lot of attention from various research domains, nevertheless in order to work well, most of them are based on fairly expensive sensor technologies.
-	\item As a solution it is possible to build the ANS based only on visual input (i.e. camera) which, in combination with the odometry of the system, allow them to map an environment and navigate.
-	\item In our work we show that standard Computer Vision and Deep Learning algorithms fail in understanding the visual information that is received as input from a camera due to their lack in preserving the \textbf{Geometrical Properties} of the images. The consequence of this lack of understanding turns into an ANS which is unable to \textbf{localyze} itself.
+	\item As a solution it is possible to build the ANS based only on visual input (i.e. camera) which, in combination with the odometry of the system, allow the system to map an environment and navigate.
+	\item In this work we show that standard Computer Vision and Deep Learning algorithms fail in understanding the visual information that is received as input from a camera. This is given due to their lack in preserving the \textbf{Geometrical Properties} of the images. The consequence of this lack of understanding turns into an ANS which is unable to \textbf{localyze} itself.
 	\item To solve this problem we present a novel \textbf{Deep Convolutional Neural Network} \cite{szegedy2015going} inspired by the famous \textit{Inception Module} \cite{szegedy2016rethinking} which is tested on $2$ Datasets that we have created: the first one is used for \textit{Scene Recogntion} while the latter one for \textit{Location Recognition}.
 \end{itemize}
 
@@ -81,16 +82,16 @@ We create the Datasets as follows:
 	\item Data-Augmentation up to $32,5640$ samples
 	\end{itemize}
 
-$80\%$ is used as Training set, while $10\%$ each as Validation and Testing sets respectively.
+$80\%$ is used as Training set, while $10\%$ is used as Validation and Testing sets respectively.
 
 \item Location Recognition Dataset
 
 	\begin{itemize}
 	\item $1$ Extra class ($\varphi$) is added to the Dataset
-	\item $\varphi$ consisting of all the images presented in the previous Dataset but flipped as shown in Figure \ref{fig:FlippedExamples}
+	\item $\varphi$ consisting of all the images presented in the previous Dataset but flipped, as shown in Figure \ref{fig:FlippedExamples}
 	\end{itemize}
 
-We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
+We split the Dataset into $50\%$ for Training and $50\%$ for Testing.
 \end{itemize}
 
 \begin{figure}
@@ -105,8 +106,8 @@ We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
 %===============================================================================
 \section*{Histogram of SIFT Features + Artificial Neural Network}
 \begin{itemize}
-	\item Proposed by \cite{lowe2004distinctive} the Scale Invariant Feature Transform (SIFT) in combination with the Bag of Visual Word (BOW) was the state of the art technique before the advent of CNNs
-	\item Not suitable for our Dataset which contains pictures with few unique features that do not help the algorithm in the generalization phase
+	\item Proposed by \cite{lowe2004distinctive} the Scale Invariant Feature Transform (SIFT) in combination with the Bag of Visual Word (BOW) was the state of the art technique in Computer Vision before the advent of CNNs
+	\item Not suitable for our Dataset which contains pictures with few unique features that do not help the algorithm during the generalization phase
 	\item Instead we identify the features via the use of a \textbf{Dense Grid of Key Points} over the images
 	as shown in Figure \ref{fig:KeyPoints}
 
@@ -138,11 +139,11 @@ This Artificial Neural Network consists in:
 
 	\item $33$ layers deep neural network
 	\item Replaces $5 \times 5$ convolutions with two consecutive $3 \times 3$ ones as shown in Figure \ref{fig:ConvolutionsExample}
-	\item Similarly a $3 \times 3$ convolution is replaced by a $3 \times 1$ and $1 \times 3$ ones
+	\item Similarly a $3 \times 3$ convolution is replaced by $3 \times 1$ and $1 \times 3$ convolutions
 	\item We take the original architecture publicly available on \verb#GitHub# \footnote{
 \url{https://github.com/tensorflow/models/tree/master/inception}} and train only a final fully connected layer of $250$ hidden units
 	\item $\approx 1.3$ millions of parameters have to be trained
-	\item Extensive use of \textbf{Pooling} which does not help during the \textbf{Localization} process since it modifies the geometrical properties of the inputs
+	\item Due to the extensive use of \textbf{Pooling} the geometrical properties of the inputs get changed misleading the \textbf{Localization} phase
 
 \end{itemize}
 
@@ -156,7 +157,9 @@ This Artificial Neural Network consists in:
 
 %===============================================================================
 
-\section*{Novel Convolutional Neural Network Architecture}
+\section*{Novel Deep Convolutional Neural Network Architecture}
+
+We propose he following neural architecture.
 
 \centering
 \subsubsection*{Motivation}
@@ -189,7 +192,7 @@ This Artificial Neural Network consists in:
 \subsubsection*{Scene Dataset Accuracies}
 
 \begin{itemize}
-	\item We report in Table \ref{tab:tab1} the accuracies which have been obtained by the different algorithms, with $\tau$ being the amount of computation time in hours.
+	\item We report in Table \ref{tab:tab1} the accuracies that have been obtained by the different Computer Vision algorithms. $\tau$ refers to the amount of computation time in hours.
 \end{itemize}
 
 \begin{table}
@@ -224,7 +227,7 @@ This Artificial Neural Network consists in:
 
 \begin{itemize}
 	\item We see that our novel DCNN is able to classify correctly the images in the Location Dataset, meaning that the geometrical properties of the input are maintained. 
-	\item Figure \ref{fig:SoftmaxOutput} shows the robustness of the system that makes use of our neural architecture. 
+	\item Figure \ref{fig:SoftmaxOutput} shows the robustness of the system that makes use of our neural architecture in a simulated environment. 
 \end{itemize}
 
 
@@ -234,7 +237,7 @@ This Artificial Neural Network consists in:
         \includegraphics[width=0.275\textwidth]{position2.png}
 	\hfill
 	\includegraphics[width=0.275\textwidth]{position3.png}
-	\caption{The softmax output of the DCNN on two flipped pictures representing the same location. We observe 		  how the ANN is able to distinguish the two locations}
+	\caption{The softmax output of the DCNN on two flipped pictures representing the same location. We observe how the ANN is able to distinguish the two locations}
 	\label{fig:SoftmaxOutput}
 \end{figure}
 
@@ -245,7 +248,7 @@ This Artificial Neural Network consists in:
 
 \begin{itemize}
 	\item In this work we show how it is possible to build Deep Convolutional Neural Networks without having to rely on dimensionality reduction techniques such as \textbf{Pooling}.
-	\item We show how this can be particularly useful in the context of Autonomous Navigation Systems based on visual input. 
+	\item We show how this can be particularly useful in the context of Autonomous Navigation Systems that are based on visual input. 
 
 \end{itemize}
 
