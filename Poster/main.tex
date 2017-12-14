@@ -9,6 +9,7 @@
 \usepackage{tabularx}
 \usepackage{graphicx}
 \usepackage{xcolor}
+\usepackage{url}
 
 \usepackage{mathtools}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
@@ -51,7 +52,7 @@ Francesco Bidoia \hspace{0.5cm} & Matthia Sabatelli \hspace{0.5cm} & Amirhossein
 	\item Autonomous Navigation Systems (ANS) have recently gained a lot of attention from various research domains, nevertheless in order to work well, most of them are based on fairly expensive sensor technologies.
 	\item As a solution it is possible to build the ANS based only on visual input (i.e. camera) which, in combination with the odometry of the system, allow them to map an environment and navigate.
 	\item In our work we show that standard Computer Vision and Deep Learning algorithms fail in understanding the visual information that is received as input from a camera due to their lack in preserving the \textbf{Geometrical Properties} of the images. The consequence of this lack of understanding turns into an ANS which is unable to \textbf{localyze} itself.
-	\item To solve this problem we present a novel \textbf{Deep Convolutional Neural Network} inspired by the famous \textit{Inception Module} *Ref* which is tested on $2$ Datasets that we have created: the first one is used for \textit{Scene Recogntion} while the latter one for \textit{Location Recognition}.
+	\item To solve this problem we present a novel \textbf{Deep Convolutional Neural Network} \cite{szegedy2015going} inspired by the famous \textit{Inception Module} \cite{szegedy2016rethinking} which is tested on $2$ Datasets that we have created: the first one is used for \textit{Scene Recogntion} while the latter one for \textit{Location Recognition}.
 \end{itemize}
 
 %===============================================================================
@@ -104,7 +105,7 @@ We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
 %===============================================================================
 \section*{Histogram of SIFT Features + Artificial Neural Network}
 \begin{itemize}
-	\item Proposed by ** the Scale Invariant Feature Transform (SIFT) in combination with the Bag of Visual Word (BOW) was the state of the art technique before the advent of CNNs
+	\item Proposed by \cite{lowe2004distinctive} the Scale Invariant Feature Transform (SIFT) in combination with the Bag of Visual Word (BOW) was the state of the art technique before the advent of CNNs
 	\item Not suitable for our Dataset which contains pictures with few unique features that do not help the algorithm in the generalization phase
 	\item Instead we identify the features via the use of a \textbf{Dense Grid of Key Points} over the images
 	as shown in Figure \ref{fig:KeyPoints}
@@ -115,7 +116,8 @@ We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
 		\caption{Visualization of the Key Points on an Image present in the Datasets}
 		\label{fig:KeyPoints}
 	\end{figure}
-
+	
+	\item We obtain:
 	\begin{itemize}
 		\item $1$ key point every $8$ pixels
 		\item Total of $5440$ key points per picture
@@ -130,12 +132,15 @@ We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
 
 \section*{Inception V3 Convolutional Neural Network}
 
+This Artificial Neural Network consists in:
+
 \begin{itemize}
 
 	\item $33$ layers deep neural network
 	\item Replaces $5 \times 5$ convolutions with two consecutive $3 \times 3$ ones as shown in Figure \ref{fig:ConvolutionsExample}
 	\item Similarly a $3 \times 3$ convolution is replaced by a $3 \times 1$ and $1 \times 3$ ones
-	\item We take the original architecture publicly available on \verb#GitHub# and train only a final fully connected layer of $250$ hidden units
+	\item We take the original architecture publicly available on \verb#GitHub# \footnote{
+\url{https://github.com/tensorflow/models/tree/master/inception}} and train only a final fully connected layer of $250$ hidden units
 	\item $\approx 1.3$ millions of parameters have to be trained
 	\item Extensive use of \textbf{Pooling} which does not help during the \textbf{Localization} process since it modifies the geometrical properties of the inputs
 
@@ -156,7 +161,7 @@ We split the Dataset in $50\%$ for Training and $50\%$ for Testing.
 \centering
 \subsubsection*{Motivation}
 	\begin{itemize}
-		\item Use the optimization techniques of the Inception $V3$ architecture presented in Figure \ref{fig:ComvolutionsExample}
+		\item Use the optimization techniques of the Inception $V3$ architecture presented in Figure \ref{fig:ConvolutionsExample}
 		\item \textbf{Avoid Pooling} in order to preserve the geometrical information of the input
 
 	\end{itemize}
